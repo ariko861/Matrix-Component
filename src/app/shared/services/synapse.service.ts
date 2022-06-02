@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, concat, EMPTY, firstValueFrom, iif, lastValueFrom, map, merge, mergeMap, Observable, switchMap, take, tap } from 'rxjs';
-import { combineLatestInit } from 'rxjs/internal/observable/combineLatest';
+import { BehaviorSubject, EMPTY, iif, map, Observable, switchMap, take, tap } from 'rxjs';
 import { Message } from '../models/message.model';
 import { Room } from '../models/room.model';
 import { Timeline } from '../models/timeline.model';
@@ -85,14 +84,6 @@ export class SynapseService {
     }
   }
 
-  // getStartPoint() {
-  //   if (!this.fromStart$) return EMPTY;
-  //   else {
-  //     let filter =  `{"types":["m.room.history_visibility"]}`;
-  //     return this.getRoomState("m.room.history_visibility");
-  //   }
-  // }
-
   initEndToken() {
     if (this.fromStart$) this.setEndToken("t0-0")
     else this.setEndToken("");
@@ -139,12 +130,12 @@ export class SynapseService {
 
   }
 
-  continueOnTimeline(type: 'image' | 'text'): any {
+  continueOnTimeline(type: 'image' | 'text', loop = 10): any {
     let filter = ( type === 'image' ? '{"types": ["m.room.message"], "contains_url": true }' : `{"types":["m.room.message"]}` )
-
+    loop--;
     return this.fetchTimeLine(filter).pipe(
       tap((timeline) => { this.newTimeline = timeline.chunk, this.setEndToken(timeline.end) }),
-      switchMap(timeline => iif(() => timeline.chunk.length === 0, this.continueOnTimeline(type), this.timeline$.pipe( // keep fetching if no result
+      switchMap(timeline => iif(() => timeline.chunk.length === 0 && loop > 0, this.continueOnTimeline(type, loop), this.timeline$.pipe( // keep fetching if no result
         take(1),
         tap((timeline) => timeline.push(...this.newTimeline)),
         tap((updatedTimeline) => this._timeline$.next(updatedTimeline))
@@ -193,6 +184,7 @@ export class SynapseService {
 
   public setHomeserver(homeserver: string) {
     this._homeserver$.next(homeserver);
+    this.setAccessToken('');
   }
 
   public setRoomId(roomId: string) {
@@ -201,12 +193,12 @@ export class SynapseService {
 
   public setMediaGallery(mediaGallery: boolean) {
     this._mediaGallery$.next(mediaGallery);
-    if (mediaGallery) this.setCarousel(false);
+    // if (mediaGallery === true) this.setCarousel(false);
   }
 
   public setCarousel(carousel: boolean) {
     this._carousel$.next(carousel);
-    if (carousel) this.setMediaGallery(false);
+    if (carousel === true) this.setMediaGallery(false);
   }
 
   public setFromStart(fromStart: boolean) {

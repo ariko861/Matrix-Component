@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  homeserver: 'synapse.alternumerica.org',
-  roomId: '!VdiatECqbMOqUpaYen:alternumerica.org',
+  homeserver: 'matrix.org',
+  roomId: '!eJSrARQmmGILZSXxjl:matrix.org',
   mediaGallery: false
 };
 
