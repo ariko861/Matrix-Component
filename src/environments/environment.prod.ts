@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  homeserver: 'synapse.alternumerica.org',
-  roomId: '!lcILsykLkCasyRclym:alternumerica.org',
+  homeserver: 'matrix.hello-matrix.net',
+  roomId: '!sBcCeweWXOjVViEiIY:hello-matrix.net',
   mediaGallery: false
 };

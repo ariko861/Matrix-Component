@@ -6,7 +6,7 @@
     <div *ngIf="first" class="tile" id="matrix-title">
         <div class="tile-icon">
             <figure class="avatar avatar-xl">
-                <img src="{{ getUrlFromMxc(room.avatar_url, 'thumbnail') }}">
+                <img *ngIf="room.avatar_url" src="{{ getUrlFromMxc(room.avatar_url, 'thumbnail') }}">
             </figure>
         </div>
         <div class="tile-content">

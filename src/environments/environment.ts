@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  homeserver: 'matrix.org',
-  roomId: '!eJSrARQmmGILZSXxjl:matrix.org',
+  homeserver: 'matrix.hello-matrix.net',
+  roomId: '!sBcCeweWXOjVViEiIY:hello-matrix.net',
   mediaGallery: false
 };
 

@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, switchMap, tap } from 'rxjs';
 import { Message } from 'src/app/shared/models/message.model';
@@ -16,6 +17,7 @@ export class MatrixSpaceComponent implements OnInit {
 
   timeline$!: Observable<Message[]>;
   fullImageUrl!: string;
+  favicon: HTMLLinkElement | null = document.querySelector('#appIcon');
 
   rooms$!: Observable<Room[]>;
 
@@ -24,7 +26,7 @@ export class MatrixSpaceComponent implements OnInit {
   @Input() fromStart: boolean = false;
   @Input() mediaGallery: boolean = false;
 
-  constructor(private synapse: SynapseService, private route: ActivatedRoute) { }
+  constructor(private synapse: SynapseService, private route: ActivatedRoute, private title: Title) { }
 
   ngOnInit(): void {
 
@@ -38,7 +40,11 @@ export class MatrixSpaceComponent implements OnInit {
     // this.synapse.getAccessTokenForGuest(this.synapse.homeserver$ )
     this.rooms$ = this.synapse.rooms$;
     this.getParams().pipe(
-      switchMap(() => this.synapse.initiateRoom())
+      switchMap(() => this.synapse.initiateRoom()),
+      tap( result => { 
+        this.title.setTitle(result.rooms[0].name),
+        this.changeIcon(result.rooms[0].avatar_url)
+      })
     ).subscribe();
 
   }
@@ -74,6 +80,10 @@ export class MatrixSpaceComponent implements OnInit {
           
         };
       }));
+  }
+
+  changeIcon(url: string): void {
+    if (this.favicon) this.favicon.href = this.getUrlFromMxc(url, 'thumbnail');  
   }
 
   get isMediaGallery() {
