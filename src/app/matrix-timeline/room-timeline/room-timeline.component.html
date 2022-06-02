@@ -1,14 +1,4 @@
-<div class="tile" id="matrix-title">
-    <div class="tile-icon">
-        <figure class="avatar avatar-xl">
-            <img src="{{ roomAvatarUrl$ | async }}">
-        </figure>
-    </div>
-    <div class="tile-content">
-        <h3 class="tile-title">{{ roomName$ | async }}</h3>
-        <h6 class="tile-subtitle" [innerHTML]="roomTopic$ | async | markdown"></h6>
-    </div>
-</div>
+
 <div id="matrix-timeline">
     <div class="matrix-message" class="tile"
         *ngFor="let message of timeline$ | async; let last = last" appScrollTracker

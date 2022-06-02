@@ -29,7 +29,7 @@ export class MatrixRoomGalleryComponent implements OnInit {
   }
 
   timelineScrolled() {
-    this.synapse.continueOnTimeline();
+    this.synapse.continueOnTimeline('image').subscribe();
   }
 
 }

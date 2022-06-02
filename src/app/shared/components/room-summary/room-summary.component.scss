@@ -1,0 +1,16 @@
+.card {
+    height: 100%;
+    box-shadow: 0 .25rem 1rem rgba(48, 55, 66, .15);
+    border: none;
+    transition: all .3s ease-out;
+    cursor: pointer;
+
+    &:hover {
+        transform: translate(0, -5px);
+    }
+}
+
+.card-image {
+    max-height: 200px;
+    overflow: hidden;
+}

@@ -8,6 +8,7 @@ import { MatrixCarouselModule } from './matrix-carousel/matrix-carousel.module';
 import { MatrixGalleryModule } from './matrix-gallery/matrix-gallery.module';
 import { MatrixTimelineModule } from './matrix-timeline/matrix-timeline.module';
 import { CoreModule } from './core/core.module';
+import { MatrixSpaceModule } from './matrix-space/matrix-space.module';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,7 @@ import { CoreModule } from './core/core.module';
     MatrixTimelineModule,
     CoreModule,
     MatrixCarouselModule,
-    MatrixGalleryModule
+    MatrixSpaceModule
     
   ],
   providers: [],

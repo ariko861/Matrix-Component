@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SpaceSummaryComponent } from './space-summary.component';
+import { MatrixSpaceComponent } from './matrix-space.component';
 
-describe('SpaceSummaryComponent', () => {
-  let component: SpaceSummaryComponent;
-  let fixture: ComponentFixture<SpaceSummaryComponent>;
+describe('MatrixSpaceComponent', () => {
+  let component: MatrixSpaceComponent;
+  let fixture: ComponentFixture<MatrixSpaceComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SpaceSummaryComponent ]
+      declarations: [ MatrixSpaceComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SpaceSummaryComponent);
+    fixture = TestBed.createComponent(MatrixSpaceComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

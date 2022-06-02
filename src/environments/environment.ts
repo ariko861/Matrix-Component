@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   homeserver: 'synapse.alternumerica.org',
-  roomId: '!lcILsykLkCasyRclym:alternumerica.org',
+  roomId: '!VdiatECqbMOqUpaYen:alternumerica.org',
   mediaGallery: false
 };
 

@@ -1,0 +1,38 @@
+<div *ngIf="parent_id" (click)="getParent()" class="back-button"><i class="icon icon-back icon-2x"></i></div>
+
+<ng-container *ngFor="let room of rooms$ | async; let first = first">
+
+    <!-- If loop is in first room, display title and avatar -->
+    <div *ngIf="first" class="tile" id="matrix-title">
+        <div class="tile-icon">
+            <figure class="avatar avatar-xl">
+                <img src="{{ getUrlFromMxc(room.avatar_url, 'thumbnail') }}">
+            </figure>
+        </div>
+        <div class="tile-content">
+            <h3 class="tile-title">{{ room.name }}</h3>
+            <h6 class="tile-subtitle" [innerHTML]=""></h6>
+        </div>
+    </div>
+</ng-container>
+
+<div class="columns">
+    <ng-container *ngFor="let room of rooms$ | async; let first = first">
+        <!-- If several room in room ( if room is a space ), display children -->
+        <div class="column col-3 col-xl-4 col-lg-6 col-sm-12 room-summary" *ngIf="!first && room.world_readable">
+            <app-room-summary [name]="room.name" [avatar_url]="getUrlFromMxc(room.avatar_url, 'thumbnail')"
+                [room_id]="room.room_id" [topic]="room.topic" (click)="setRoomId(room.room_id)" ></app-room-summary>
+        </div>
+
+    </ng-container>
+</div>
+
+<ng-container *ngFor="let room of rooms$ | async; let first = first">
+
+    <!-- Check if room is not a space and is situated in first line ( only room of the call ) -->
+    <ng-container *ngIf="first && room.room_type !== 'm.space'">
+        <app-room-timeline *ngIf="!isMediaGallery"></app-room-timeline>
+        <app-matrix-room-gallery *ngIf="isMediaGallery"></app-matrix-room-gallery>
+    </ng-container>
+
+</ng-container>

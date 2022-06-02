@@ -1,7 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, firstValueFrom, lastValueFrom, map, Observable, switchMap, take, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, concat, EMPTY, firstValueFrom, iif, lastValueFrom, map, merge, mergeMap, Observable, switchMap, take, tap } from 'rxjs';
+import { combineLatestInit } from 'rxjs/internal/observable/combineLatest';
 import { Message } from '../models/message.model';
+import { Room } from '../models/room.model';
 import { Timeline } from '../models/timeline.model';
 
 @Injectable({
@@ -16,21 +18,10 @@ export class SynapseService {
 
   access_token!: string;
 
-  private _roomName$ = new BehaviorSubject<string>("");
-  get roomName$(): Observable<string> {
-    return this._roomName$.asObservable();
+  private _rooms$ = new BehaviorSubject<Room[]>([]);
+  get rooms$(): Observable<Room[]> {
+    return this._rooms$.asObservable();
   }
-
-  private _roomTopic$ = new BehaviorSubject<string>("");
-  get roomTopic$(): Observable<string> {
-    return this._roomTopic$.asObservable();
-  }
-
-  private _roomAvatarUrl$ = new BehaviorSubject<string>("");
-  get roomAvatarUrl$(): Observable<string> {
-    return this._roomAvatarUrl$.asObservable();
-  }
-
 
   private _timeline$ = new BehaviorSubject<Message[]>([]);
   get timeline$(): Observable<Message[]> {
@@ -79,81 +70,96 @@ export class SynapseService {
 
 
 
+  getAccessTokenForGuest() {
+    return this.http.post<{ access_token: string }>(`https://${this.homeserver$}/_matrix/client/v3/register?kind=guest`, { initial_device_display_name: "matrix-component" }).pipe(
+      tap((response) => this.setAccessToken(response.access_token))
+    );
+  }
 
-  async getAccessTokenForGuest(homeserver: string) {
-    if (this.accessToken$) return this.accessToken$;
+  initiateRoom() {
+    if (this.accessToken$) return this.getRoomHierarchy();
     else {
-      let request = this.http.post<{ access_token: string }>(`https://${homeserver}/_matrix/client/v3/register?kind=guest`, { initial_device_display_name: "matrix-component" }).pipe(
-        tap((response) => this.setAccessToken(response.access_token)),
+      return this.getAccessTokenForGuest().pipe(
+        switchMap(() => { return this.getRoomHierarchy() })
       );
-      let token = await firstValueFrom(request);
-      return token.access_token;
-
     }
   }
 
-  fetchTimeLine() {
-    let direction = this.fromStart$ ? `&dir=f` : `&dir=b`;
-    let filters = `{"types":["m.room.message"]}`;
+  // getStartPoint() {
+  //   if (!this.fromStart$) return EMPTY;
+  //   else {
+  //     let filter =  `{"types":["m.room.history_visibility"]}`;
+  //     return this.getRoomState("m.room.history_visibility");
+  //   }
+  // }
+
+  initEndToken() {
+    if (this.fromStart$) this.setEndToken("t0-0")
+    else this.setEndToken("");
+  }
+
+  getRoomHierarchy() {
+    return this.http.get<{ rooms: Room[] }>(`https://${this.homeserver$}/_matrix/client/v1/rooms/${this.roomId$}/hierarchy?access_token=${this.accessToken$}&suggested_only=true`).pipe(
+      tap(response => this.setRooms(response.rooms))
+    );
+  }
+
+  fetchTimeLine(filters = `{"types":["m.room.message"]}`) {
     let from = (this.endToken$ ? `&from=${this.endToken$}` : '');
-
-    return this.http.get<Timeline>(`https://${this.homeserver$}/_matrix/client/v3/rooms/${this.roomId$}/messages?access_token=${this.accessToken$}${direction}${from}&filter=${filters}`);
+    return this.http.get<Timeline>(`https://${this.homeserver$}/_matrix/client/v3/rooms/${this.roomId$}/messages?access_token=${this.accessToken$}${this.getDirection()}${from}&filter=${filters}`);
   }
 
-  async firstTimelineSync() {
-    await this.getAccessTokenForGuest(this.homeserver$);
-    if (this.fromStart$) this.setEndToken("t0-0");
-    else this.setEndToken("");
-    this.getRoomState().pipe(
-      tap((state) => {
-        this.setRoomName(this.getStateFromRequest(state, "m.room.name").name),
-          this.setRoomTopic(this.getStateFromRequest(state, "m.room.topic").topic),
-          this.setRoomAvatarUrl(this.getUrlFromMxc(this.getStateFromRequest(state, "m.room.avatar").url, 'thumbnail'))
+  firstTimelineSync() {
 
+    this.initEndToken(); // reinitialize end Token
+    this.fetchTimeLine().pipe(
+      tap((timeline) => {
+        this._timeline$.next(timeline.chunk),
+          this.setEndToken(timeline.end)
       }),
-      switchMap(() => this.fetchTimeLine().pipe(
-        tap((timeline) => {
-          this._timeline$.next(timeline.chunk),
-            console.log(timeline),
-            this.setEndToken(timeline.end)
-        })
-      ))
-      ).subscribe();
+      switchMap(timeline => iif(() => timeline.chunk.length === 0, this.continueOnTimeline('text'), EMPTY))
+    ).subscribe();
   }
 
-  async fetchMedias(maxImages: number = 50) {
-    let timeline: Message[] = [];
-    this.setTimeline(timeline);
+  fetchMedias(maxImages: number = 50) {
+    // let timeline: Message[] = [];
+    // this.setTimeline(timeline);
 
-    if (this.fromStart$) this.setEndToken("t0-0");
-    else this.setEndToken("");
-    let token = await this.getAccessTokenForGuest(this.homeserver$);
-    let direction = this.getDirection();
+    this.initEndToken();
+
     let filters = '{"types": ["m.room.message"], "contains_url": true }';
-    this.http.get<Timeline>(`https://${this.homeserver$}/_matrix/client/v3/rooms/${this.roomId$}/messages?access_token=${token}${direction}&filter=${filters}&limit=${maxImages}`).pipe(
+    this.fetchTimeLine(filters).pipe(
       tap((timeline) => {
         this.setTimeline(timeline.chunk),
-          this.setEndToken(timeline.end),
-          console.log(this.timeline$)
-      })
+          this.setEndToken(timeline.end)
+      }),
+      switchMap(timeline => iif(() => timeline.chunk.length === 0, this.continueOnTimeline('image'), EMPTY))
     ).subscribe();
 
 
   }
 
-  continueOnTimeline() {
+  continueOnTimeline(type: 'image' | 'text'): any {
+    let filter = ( type === 'image' ? '{"types": ["m.room.message"], "contains_url": true }' : `{"types":["m.room.message"]}` )
 
-    this.fetchTimeLine().pipe(
+    return this.fetchTimeLine(filter).pipe(
       tap((timeline) => { this.newTimeline = timeline.chunk, this.setEndToken(timeline.end) }),
-      switchMap(() => this.timeline$),
-      take(1),
-      tap((timeline) => timeline.push(...this.newTimeline)),
-      tap((updatedTimeline) => this._timeline$.next(updatedTimeline))
-    ).subscribe();
+      switchMap(timeline => iif(() => timeline.chunk.length === 0, this.continueOnTimeline(type), this.timeline$.pipe( // keep fetching if no result
+        take(1),
+        tap((timeline) => timeline.push(...this.newTimeline)),
+        tap((updatedTimeline) => this._timeline$.next(updatedTimeline))
+      ))),
+
+    );
   }
 
-  getRoomState() {
-    return this.http.get<any[]>(`https://${this.homeserver$}/_matrix/client/v3/rooms/${this.roomId$}/state?access_token=${this.accessToken$}`);
+  getRoomState(filter: string = "") {
+    let roomStates = this.http.get<any[]>(`https://${this.homeserver$}/_matrix/client/v3/rooms/${this.roomId$}/state?access_token=${this.accessToken$}`);
+    if (!filter) return roomStates;
+    else return roomStates.pipe(
+      map(result => result.find(x => x.type === filter)),
+      tap(result => console.log(result))
+    )
   }
 
   getUrlFromMxc(url: string, thumbnail: 'thumbnail' | 'download') {
@@ -207,17 +213,8 @@ export class SynapseService {
     this._fromStart$.next(fromStart);
   }
 
-  private setRoomName(roomName: string) {
-    this._roomName$.next(roomName);
-  }
-
-  private setRoomTopic(roomTopic: string) {
-    this._roomTopic$.next(roomTopic);
-  }
-
-
-  private setRoomAvatarUrl(roomAvatarUrl: string) {
-    this._roomAvatarUrl$.next(roomAvatarUrl);
+  private setRooms(rooms: Room[]) {
+    this._rooms$.next(rooms);
   }
 
 

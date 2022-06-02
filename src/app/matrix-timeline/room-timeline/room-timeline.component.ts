@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { SynapseService } from 'src/app/shared/services/synapse.service';
 import { Message } from '../../shared/models/message.model';
 
@@ -11,9 +11,6 @@ import { Message } from '../../shared/models/message.model';
 export class RoomTimelineComponent implements OnInit {
 
   timeline$!: Observable<Message[]>;
-  roomName$!: Observable<string>;
-  roomTopic$!: Observable<string>;
-  roomAvatarUrl$!: Observable<string>;
   fullImageUrl!: string;
 
   @Input() homeserver!: string;
@@ -24,9 +21,6 @@ export class RoomTimelineComponent implements OnInit {
 
   ngOnInit(): void {
     this.timeline$ = this.synapse.timeline$;
-    this.roomName$ = this.synapse.roomName$;
-    this.roomAvatarUrl$ = this.synapse.roomAvatarUrl$;
-    this.roomTopic$ = this.synapse.roomTopic$;
 
     if (this.homeserver) this.synapse.setHomeserver(this.homeserver);
     if (this.roomId) this.synapse.setRoomId(this.roomId);
@@ -40,7 +34,7 @@ export class RoomTimelineComponent implements OnInit {
   }
 
   timelineScrolled() {
-    this.synapse.continueOnTimeline();
+    this.synapse.continueOnTimeline('text').subscribe();
 
   }
 

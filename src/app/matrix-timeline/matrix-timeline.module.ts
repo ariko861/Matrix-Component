@@ -15,7 +15,7 @@ import { createCustomElement } from '@angular/elements';
     SharedModule, 
   ], 
   exports: [
-    RoomTimelineComponent
+    RoomTimelineComponent,
   ]
 })
 export class MatrixTimelineModule {

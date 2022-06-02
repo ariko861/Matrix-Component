@@ -3,8 +3,6 @@ import { CommonModule } from '@angular/common';
 import { TimelineImageComponent } from './components/timeline-image/timeline-image.component';
 import { MarkdownPipe } from './pipes/markdown.pipe';
 import { ObserveVisibilityDirective } from './directives/observe-visibility.directive';
-import { ReactiveFormsModule } from '@angular/forms';
-import { SpaceSummaryComponent } from './components/space-summary/space-summary.component';
 import { RoomSummaryComponent } from './components/room-summary/room-summary.component';
 
 
@@ -14,7 +12,6 @@ import { RoomSummaryComponent } from './components/room-summary/room-summary.com
     TimelineImageComponent,
     MarkdownPipe,
     ObserveVisibilityDirective,
-    SpaceSummaryComponent,
     RoomSummaryComponent
   ],
   imports: [
@@ -24,7 +21,6 @@ import { RoomSummaryComponent } from './components/room-summary/room-summary.com
     TimelineImageComponent,
     ObserveVisibilityDirective,
     MarkdownPipe,
-    SpaceSummaryComponent,
     RoomSummaryComponent
   ]
 })

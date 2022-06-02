@@ -61,7 +61,7 @@ export class MatrixMenuComponent implements OnInit {
     this.synapse.setCarousel(this.configForm.value.carousel);
     this.synapse.setFromStart(this.configForm.value.fromStart);
     this.closeMenu();
-    this.synapse.firstTimelineSync();
+    this.synapse.initiateRoom().subscribe();
   }
 
 }
