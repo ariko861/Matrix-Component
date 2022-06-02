@@ -1,0 +1,21 @@
+#menu-trigger {
+    position: fixed;
+    left: 10px;
+    top: 10px;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+#config-menu {
+    position: fixed;
+    height:100%;
+    overflow-y: scroll;
+    left: 0;
+    top:0;
+
+}
+
+#config-menu form {
+    margin-left: 15px;
+    margin-top: 60px;
+}

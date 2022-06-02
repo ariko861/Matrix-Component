@@ -1,0 +1,44 @@
+<div id="menu-trigger">
+    <i class="icon icon-2x icon-menu" *ngIf="menuExpanded === false" (click)="expandMenu()"></i>
+    <i class="icon icon-2x icon-cross" *ngIf="menuExpanded" (click)="closeMenu()"></i>
+    
+</div>
+
+<div id="config-menu" *ngIf="menuExpanded" class="menu">
+
+    <form [formGroup]="configForm">
+        <div class="divider text-center" data-content="Configuration de la page"></div>
+        <div class="form-group">
+            <label class="form-label">Homeserver</label>
+            <input class="form-input" type="text" formControlName="homeserver">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Room ID</label>
+            <input class="form-input" type="text" formControlName="roomId">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Display Photo Gallery</label>
+            <input type="checkbox" formControlName="mediaGallery" (change)="checkGallery($event)">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Display Carousel</label>
+            <input type="checkbox" formControlName="carousel" (change)="checkCarousel($event)">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Start from room begin</label>
+            <input type="checkbox" formControlName="fromStart">
+        </div>
+
+        
+        
+
+        <br>
+        <button class="btn btn-primary" [disabled]="configForm.invalid" type="submit" (click)="submitConfig()">Enregistrer la configuration</button>
+        
+
+    </form>
+
+</div>

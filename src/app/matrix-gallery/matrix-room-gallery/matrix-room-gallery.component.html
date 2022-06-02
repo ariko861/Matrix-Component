@@ -1,0 +1,16 @@
+<div id="matrix-timeline" class="columns gallery">
+    <div class="matrix-message" *ngFor="let message of timeline$ | async; let last = last" appScrollTracker
+        (timelineScrolled)="timelineScrolled()">
+        <div class="thumbnail-in-gallery">
+            <ng-container *ngIf="message.content">
+                <div *ngIf="last" observeVisibility [debounceTime]="0" (visible)="timelineScrolled()"></div>
+                <ng-container *ngIf="message.content.msgtype === 'm.image'">
+                    <a href="#full-image-modal" (click)="fullImageUrl = message.content.url">
+                        <img src="{{ getUrlFromMxc(message.content.url, 'thumbnail') }}" />
+                    </a>
+                </ng-container>
+            </ng-container>
+        </div>
+    </div>
+    <app-timeline-image [url]="fullImageUrl" (destroyUrl)="fullImageUrl = ''"></app-timeline-image>
+</div>

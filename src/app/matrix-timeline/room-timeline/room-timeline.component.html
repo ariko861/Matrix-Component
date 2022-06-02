@@ -1,0 +1,39 @@
+<div class="tile" id="matrix-title">
+    <div class="tile-icon">
+        <figure class="avatar avatar-xl">
+            <img src="{{ roomAvatarUrl$ | async }}">
+        </figure>
+    </div>
+    <div class="tile-content">
+        <h3 class="tile-title">{{ roomName$ | async }}</h3>
+        <h6 class="tile-subtitle" [innerHTML]="roomTopic$ | async | markdown"></h6>
+    </div>
+</div>
+<div id="matrix-timeline">
+    <div class="matrix-message" class="tile"
+        *ngFor="let message of timeline$ | async; let last = last" appScrollTracker
+        (timelineScrolled)="timelineScrolled()">
+        <div class="tile-content">
+            <div class="divider text-center"
+                [attr.data-content]="message.origin_server_ts | date: 'dd MMMM YYYY, HH:mm'"></div>
+            <ng-container *ngIf="message.content">
+                <div *ngIf="last" observeVisibility [debounceTime]="0" (visible)="timelineScrolled()"></div>
+                <ng-container *ngIf="message.content.msgtype === 'm.image'">
+                    <a href="#full-image-modal" (click)="fullImageUrl = message.content.url">
+                        <img src="{{ getUrlFromMxc(message.content.url, 'thumbnail') }}" />
+                    </a>
+                </ng-container>
+                <ng-container *ngIf="message.content.msgtype === 'm.text'">
+                    <p [innerHTML]="message.content.body | markdown"></p>
+                </ng-container>
+            </ng-container>
+            <div class="tile-subtitle text-tiny">
+                <a class="label label-rounded text-left" href="https://matrix.to/#/{{message.sender}}">{{ message.sender
+                    }}</a>
+            </div>
+
+        </div>
+
+    </div>
+    <!-- <app-timeline-image [url]="fullImageUrl" (destroyUrl)="fullImageUrl = ''"></app-timeline-image> -->
+</div>

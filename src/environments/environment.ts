@@ -3,7 +3,10 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  homeserver: 'synapse.alternumerica.org',
+  roomId: '!lcILsykLkCasyRclym:alternumerica.org',
+  mediaGallery: false
 };
 
 /*

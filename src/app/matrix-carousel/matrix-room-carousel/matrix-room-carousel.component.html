@@ -1,0 +1,25 @@
+<div class="carousel">
+    <!-- carousel locator -->
+    <input *ngFor="let message of carousel$ | async; index as i; let first = first" class="carousel-locator"
+        id="slide-{{ i }}" type="radio" name="carousel-radio" hidden="" [checked]="first">
+
+    <!-- carousel container -->
+    <div class="carousel-container">
+        <!-- carousel item -->
+
+        <figure class="carousel-item" *ngFor="let message of carousel$ | async; index as i; let last = last">
+            <label class="item-prev btn btn-action btn-lg" for="slide-{{ i - 1 }}"><i
+                    class="icon icon-arrow-left"></i></label>
+            <label class="item-next btn btn-action btn-lg" [for]="last ? 'slide-0' : 'slide-' + ( i + 1 )"><i
+                    class="icon icon-arrow-right"></i></label>
+            <img class="img-responsive rounded" *ngIf="message.content.msgtype === 'm.image'" src="{{ getUrlFromMxc(message.content.url, 'thumbnail') }}"
+                alt="{{ message.content.body }}">
+        </figure>
+
+    </div>
+    <!-- carousel navigation -->
+    <div class="carousel-nav">
+        <label *ngFor="let message of carousel$ | async; index as i" class="nav-item text-hide c-hand"
+            for="slide-{{ i }}">{{ i }}</label>
+    </div>
+</div>
