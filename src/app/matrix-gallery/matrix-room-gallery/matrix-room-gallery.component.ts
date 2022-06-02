@@ -16,6 +16,7 @@ export class MatrixRoomGalleryComponent implements OnInit {
   @Input() fromStart: boolean = false;
 
   fullImageUrl!: string;
+  showImageOnScreen: boolean = false;
   timeline$!: Observable<Message[]>;
 
   constructor(private synapse: SynapseService) { }
@@ -31,6 +32,16 @@ export class MatrixRoomGalleryComponent implements OnInit {
 
   timelineScrolled() {
     this.synapse.continueOnTimeline('image').subscribe();
+  }
+
+  imageClick(message: Message){
+    this.fullImageUrl = message.content.url;
+    if (!this.showImageOnScreen) this.showImageOnScreen = true;
+  }
+
+  hideModal() {
+    this.fullImageUrl = '';
+    this.showImageOnScreen = false;
   }
 
 }

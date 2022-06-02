@@ -73,6 +73,11 @@ export class SynapseService {
   }
 
 
+  get urlParams(){
+    return `?homeserver=${this.homeserver$}&roomId=${this.roomId$}&mediaGallery=${this.mediaGallery$}$fromStart=${this.fromStart$}`;
+  }
+
+
 
   getAccessTokenForGuest() {
     return this.http.post<{ access_token: string }>(`https://${this.homeserver$}/_matrix/client/v3/register?kind=guest`, { initial_device_display_name: "matrix-component" }).pipe(

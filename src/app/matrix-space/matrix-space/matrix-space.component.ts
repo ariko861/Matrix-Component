@@ -83,12 +83,15 @@ export class MatrixSpaceComponent implements OnInit {
   }
 
   changeIcon(url: string): void {
-    if (this.favicon) this.favicon.href = this.getUrlFromMxc(url, 'thumbnail');  
+    if (this.favicon && url ) this.favicon.href = this.getUrlFromMxc(url, 'thumbnail');  
   }
 
   get isMediaGallery() {
     return this.synapse.mediaGallery$;
   }
 
+  get urlParams() {
+    return this.synapse.urlParams;
+  }
 
 }

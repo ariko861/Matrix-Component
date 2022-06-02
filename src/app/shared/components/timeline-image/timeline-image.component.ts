@@ -11,6 +11,8 @@ import { SynapseService } from '../../services/synapse.service';
 export class TimelineImageComponent implements OnInit {
 
   @Input() url!: string;
+  @Input() showModal!: boolean;
+  
 
   @Output() destroyUrl = new EventEmitter();
 
@@ -26,7 +28,8 @@ export class TimelineImageComponent implements OnInit {
 
   hideImage(){
     this.url = "";
-    this.destroyUrl.emit('destroyUrl');
+    this.destroyUrl.emit();
+    this.showModal = false;
   }
 
 }
