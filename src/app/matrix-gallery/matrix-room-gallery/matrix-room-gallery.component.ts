@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Message } from 'src/app/shared/models/message.model';
 import { SynapseService } from 'src/app/shared/services/synapse.service';
@@ -6,7 +6,8 @@ import { SynapseService } from 'src/app/shared/services/synapse.service';
 @Component({
   selector: 'app-matrix-room-gallery',
   templateUrl: './matrix-room-gallery.component.html',
-  styleUrls: ['./matrix-room-gallery.component.scss']
+  styleUrls: ['./matrix-room-gallery.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatrixRoomGalleryComponent implements OnInit {
 

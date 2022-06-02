@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, switchMap, tap } from 'rxjs';
 import { Message } from 'src/app/shared/models/message.model';
@@ -8,15 +8,14 @@ import { SynapseService } from 'src/app/shared/services/synapse.service';
 @Component({
   selector: 'app-matrix-space',
   templateUrl: './matrix-space.component.html',
-  styleUrls: ['./matrix-space.component.scss']
+  styleUrls: ['./matrix-space.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatrixSpaceComponent implements OnInit {
 
 
   timeline$!: Observable<Message[]>;
   fullImageUrl!: string;
-
-  parent_id!: string;
 
   rooms$!: Observable<Room[]>;
 
@@ -49,15 +48,19 @@ export class MatrixSpaceComponent implements OnInit {
   }
 
   setRoomId(id: string) {
-    this.parent_id = this.synapse.roomId$;
+    this.synapse.setParentId(this.synapse.roomId$);
     this.synapse.setRoomId(id);
     this.synapse.initiateRoom().subscribe();
   }
 
   getParent() {
-    this.synapse.setRoomId(this.parent_id);
+    this.synapse.setRoomId(this.synapse.parentId$);
     this.synapse.initiateRoom().subscribe();
-    this.parent_id = "";
+    this.synapse.setParentId("");
+  }
+
+  get hasParent(){
+    return this.synapse.parentId$;
   }
 
   getParams() {

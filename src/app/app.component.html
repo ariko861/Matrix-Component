@@ -1,4 +1,5 @@
 <div class="container" [ngClass]="environment.mediaGallery ? '' : 'grid-xl'">
+    <app-matrix-nav></app-matrix-nav>
     <app-matrix-menu></app-matrix-menu>
     <app-matrix-space *ngIf="!isCarousel"></app-matrix-space>
     <app-matrix-room-carousel *ngIf="isCarousel"></app-matrix-room-carousel>

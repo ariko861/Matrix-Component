@@ -52,6 +52,11 @@ export class SynapseService {
     return this._roomId$.getValue();
   }
 
+  private _parentId$ = new BehaviorSubject<string>("");
+  get parentId$(): string {
+    return this._parentId$.getValue();
+  }
+
   private _mediaGallery$ = new BehaviorSubject<boolean>(false);
   get mediaGallery$(): boolean {
     return this._mediaGallery$.getValue();
@@ -97,7 +102,8 @@ export class SynapseService {
 
   fetchTimeLine(filters = `{"types":["m.room.message"]}`) {
     let from = (this.endToken$ ? `&from=${this.endToken$}` : '');
-    return this.http.get<Timeline>(`https://${this.homeserver$}/_matrix/client/v3/rooms/${this.roomId$}/messages?access_token=${this.accessToken$}${this.getDirection()}${from}&filter=${filters}`);
+    let limit = 30;
+    return this.http.get<Timeline>(`https://${this.homeserver$}/_matrix/client/v3/rooms/${this.roomId$}/messages?access_token=${this.accessToken$}${this.getDirection()}${from}&filter=${filters}&limit=${limit}`);
   }
 
   firstTimelineSync() {
@@ -130,7 +136,7 @@ export class SynapseService {
 
   }
 
-  continueOnTimeline(type: 'image' | 'text', loop = 10): any {
+  continueOnTimeline(type: 'image' | 'text', loop = 20): any { // the loop value is to avoid a loop of multiple calls
     let filter = ( type === 'image' ? '{"types": ["m.room.message"], "contains_url": true }' : `{"types":["m.room.message"]}` )
     loop--;
     return this.fetchTimeLine(filter).pipe(
@@ -189,6 +195,10 @@ export class SynapseService {
 
   public setRoomId(roomId: string) {
     this._roomId$.next(roomId);
+  }
+
+  public setParentId(parentId: string) {
+    this._parentId$.next(parentId);
   }
 
   public setMediaGallery(mediaGallery: boolean) {

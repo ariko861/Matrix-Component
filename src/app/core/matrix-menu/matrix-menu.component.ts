@@ -21,24 +21,24 @@ export class MatrixMenuComponent implements OnInit {
 
   ngOnInit(): void {
     this.configForm = this.formBuilder.group({
-      homeserver: ["", Validators.required],
-      roomId: ["", Validators.required],
-      mediaGallery: [false],
-      carousel: [false],
-      fromStart: [false]
+      homeserver: [this.synapse.homeserver$, Validators.required],
+      roomId: [this.synapse.roomId$, Validators.required],
+      mediaGallery: [this.synapse.mediaGallery$],
+      carousel: [this.synapse.carousel$],
+      fromStart: [this.synapse.fromStart$]
     });
 
   }
 
   expandMenu() {
     this.menuExpanded = true;
-    this.configForm.setValue({
-      homeserver: this.synapse.homeserver$,
-      roomId: this.synapse.roomId$,
-      mediaGallery: this.synapse.mediaGallery$,
-      carousel: this.synapse.carousel$,
-      fromStart: this.synapse.fromStart$
-    })
+    // this.configForm.setValue({
+    //   homeserver: this.synapse.homeserver$,
+    //   roomId: this.synapse.roomId$,
+    //   mediaGallery: this.synapse.mediaGallery$,
+    //   carousel: this.synapse.carousel$,
+    //   fromStart: this.synapse.fromStart$
+    // })
   }
 
   closeMenu() {

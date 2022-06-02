@@ -1,4 +1,4 @@
-<div *ngIf="parent_id" (click)="getParent()" class="back-button"><i class="icon icon-back icon-2x"></i></div>
+<div *ngIf="hasParent" (click)="getParent()" class="back-button"><i class="icon icon-arrow-up icon-4x"></i></div>
 
 <ng-container *ngFor="let room of rooms$ | async; let first = first">
 
