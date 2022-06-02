@@ -1,0 +1,11 @@
+.navbar {
+    padding: 1rem;
+}
+
+.chip {
+    cursor: pointer;
+    &:hover {
+        background-color: #5755d9 ;
+        color: white;
+    }
+}

@@ -1,0 +1,8 @@
+<header class="navbar">
+    <section class="navbar-section"></section>
+    <section class="navbar-section">
+        <ng-container *ngFor="let room of rooms; let first = first">
+            <span class="chip" *ngIf="!first" (click)="changeRoom(room.room_id)">{{ room.name }}</span>
+        </ng-container>
+    </section>
+</header>
