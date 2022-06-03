@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { tap } from 'rxjs';
@@ -8,7 +8,8 @@ import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-matrix-menu',
   templateUrl: './matrix-menu.component.html',
-  styleUrls: ['./matrix-menu.component.scss']
+  styleUrls: ['./matrix-menu.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatrixMenuComponent implements OnInit {
 
@@ -32,13 +33,13 @@ export class MatrixMenuComponent implements OnInit {
 
   expandMenu() {
     this.menuExpanded = true;
-    // this.configForm.setValue({
-    //   homeserver: this.synapse.homeserver$,
-    //   roomId: this.synapse.roomId$,
-    //   mediaGallery: this.synapse.mediaGallery$,
-    //   carousel: this.synapse.carousel$,
-    //   fromStart: this.synapse.fromStart$
-    // })
+    this.configForm.setValue({
+      homeserver: this.synapse.homeserver$,
+      roomId: this.synapse.roomId$,
+      mediaGallery: this.synapse.mediaGallery$,
+      carousel: this.synapse.carousel$,
+      fromStart: this.synapse.fromStart$
+    })
   }
 
   closeMenu() {

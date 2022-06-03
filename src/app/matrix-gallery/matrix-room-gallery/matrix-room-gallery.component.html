@@ -6,7 +6,7 @@
                 <div *ngIf="last" observeVisibility [debounceTime]="0" (visible)="timelineScrolled()"></div>
                 <ng-container *ngIf="message.content.msgtype === 'm.image'">
                     <a class="c-hand" (click)="imageClick(message)">
-                        <img src="{{ getUrlFromMxc(message.content.url, 'thumbnail') }}" />
+                        <img class="img-responsive" src="{{ getUrlFromMxc(message.content.url, 'thumbnail') }}" />
                     </a>
                 </ng-container>
             </ng-container>

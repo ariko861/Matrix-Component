@@ -1,11 +1,21 @@
 .navbar {
     padding: 1rem;
+    .chip {
+        cursor: pointer;
+        margin: .5em;
+
+        &:hover {
+            background-color: #5755d9;
+            color: white;
+        }
+    }
 }
 
-.chip {
-    cursor: pointer;
-    &:hover {
-        background-color: #5755d9 ;
-        color: white;
-    }
+.navbar .navbar-section.navbar-full {
+    flex-wrap: wrap;
+    flex-grow: 3;
+}
+
+.navbar .navbar-section.navbar-empty {
+    flex-shrink: 1;
 }
