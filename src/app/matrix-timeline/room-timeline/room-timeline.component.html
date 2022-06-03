@@ -8,14 +8,23 @@
                 [attr.data-content]="message.origin_server_ts | date: 'dd MMMM YYYY, HH:mm'"></div>
             <ng-container *ngIf="message.content">
                 <div *ngIf="last" observeVisibility [debounceTime]="0" (visible)="timelineScrolled()"></div>
+                <!-- Display an image if message is image type -->
                 <ng-container *ngIf="message.content.msgtype === 'm.image'">
                     <a class="c-hand" (click)="imageClick(message)">
                         <img class="img-responsive" src="{{ getUrlFromMxc(message.content.url, 'thumbnail') }}" />
                     </a>
                 </ng-container>
+                <!-- Display a video if message is video type -->
+                <ng-container *ngIf="message.content.msgtype === 'm.video'">
+                        <video controls class="video-responsive video-in-timeline" src="{{ getUrlFromMxc(message.content.url, 'download') }}" ></video>
+                </ng-container>
+                
+                <!-- Display the body if message is text type  -->
                 <ng-container *ngIf="message.content.msgtype === 'm.text'">
                     <p [innerHTML]="message.content.body | markdown"></p>
                 </ng-container>
+
+
             </ng-container>
             <div class="tile-subtitle text-tiny">
                 <a class="label label-rounded text-left" href="https://matrix.to/#/{{message.sender}}">{{ message.sender
