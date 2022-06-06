@@ -5,4 +5,10 @@ export class Config {
     carousel: boolean = false;
     fromStart: boolean = false;
     senderFilter: null | string[] = null;
+    parentId!: string;
+
+    get isParentDisplayed(): boolean{ // return true if the root space is displayed
+        return this.roomId === this.parentId;
+    }
+
 }

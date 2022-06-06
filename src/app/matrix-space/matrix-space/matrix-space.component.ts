@@ -74,15 +74,15 @@ export class MatrixSpaceComponent implements OnInit {
     return this.route.queryParams
       .pipe(tap(params => {
         if (params['homeserver'] && params['roomId']) {
-          // let config = new Config;
-          // config.homeserver = params['homeserver'];
-          // config.roomId = params['roomId'];
-          this.synapse.setHomeserver(params['homeserver']);
-          this.synapse.setRoomId(params['roomId']);
-          if (params['mediaGallery']) this.synapse.setMediaGallery(params['mediaGallery'] == "true");
-          if (params['fromStart']) this.synapse.setFromStart(params['fromStart'] == "true");
-          if (params['sendersFiltered']) this.synapse.setSenderFilter(params['sendersFiltered'].split(","));
-          
+          let config = new Config;
+          config.homeserver = params['homeserver'];
+          config.roomId = params['roomId'];
+          config.parentId = params['roomId'];
+          if (params['mediaGallery']) config.mediaGallery = (params['mediaGallery'] == "true");
+          if (params['fromStart']) config.fromStart = (params['fromStart'] == "true");
+          if (params['sendersFiltered']) config.senderFilter = (params['sendersFiltered'].split(","));
+          this.synapse.setPageConfig(config);
+
         };
       }));
   }
