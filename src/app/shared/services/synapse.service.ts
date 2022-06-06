@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, EMPTY, iif, map, Observable, switchMap, take, tap } from 'rxjs';
+import { Config } from '../models/config.model';
 import { Filter } from '../models/filter.model';
 import { Message } from '../models/message.model';
 import { Room } from '../models/room.model';
@@ -78,9 +79,14 @@ export class SynapseService {
     return this._fromStart$.getValue();
   }
 
+  private _pageConfig$ = new BehaviorSubject<Config>(new Config);
+  get pageConfig$(): Config {
+    return this._pageConfig$.getValue();
+  }
+
 
   get urlParams() {
-    return `?homeserver=${this.homeserver$}&roomId=${this.roomId$}&mediaGallery=${this.mediaGallery$}$fromStart=${this.fromStart$}`;
+    return `?homeserver=${this.homeserver$}&roomId=${this.roomId$}&mediaGallery=${this.mediaGallery$}&fromStart=${this.fromStart$}`;
   }
 
 
@@ -223,6 +229,9 @@ export class SynapseService {
 
   public setMediaGallery(mediaGallery: boolean) {
     this._mediaGallery$.next(mediaGallery);
+    let newConfig = this.pageConfig$;
+    newConfig.mediaGallery = mediaGallery;
+    this._pageConfig$.next(newConfig);
     // if (mediaGallery === true) this.setCarousel(false);
   }
 
@@ -233,6 +242,10 @@ export class SynapseService {
 
   public setFromStart(fromStart: boolean) {
     this._fromStart$.next(fromStart);
+  }
+
+  public setPageConfig(config: Config) {
+    this._pageConfig$.next(config);
   }
 
   private setRooms(rooms: Room[]) {

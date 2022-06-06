@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, switchMap, tap } from 'rxjs';
+import { Config } from 'src/app/shared/models/config.model';
 import { Message } from 'src/app/shared/models/message.model';
 import { Room } from 'src/app/shared/models/room.model';
 import { SynapseService } from 'src/app/shared/services/synapse.service';
@@ -73,6 +74,9 @@ export class MatrixSpaceComponent implements OnInit {
     return this.route.queryParams
       .pipe(tap(params => {
         if (params['homeserver'] && params['roomId']) {
+          // let config = new Config;
+          // config.homeserver = params['homeserver'];
+          // config.roomId = params['roomId'];
           this.synapse.setHomeserver(params['homeserver']);
           this.synapse.setRoomId(params['roomId']);
           if (params['mediaGallery']) this.synapse.setMediaGallery(params['mediaGallery'] == "true");
