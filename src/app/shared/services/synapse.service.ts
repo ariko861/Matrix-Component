@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, EMPTY, iif, map, Observable, switchMap, take, tap } from 'rxjs';
+import { Filter } from '../models/filter.model';
 import { Message } from '../models/message.model';
 import { Room } from '../models/room.model';
 import { Timeline } from '../models/timeline.model';
@@ -52,6 +53,11 @@ export class SynapseService {
     return this._roomId$.getValue();
   }
 
+  private _senderFilter$ = new BehaviorSubject<string[]>([]);
+  get senderFilter$(): string[] {
+    return this._senderFilter$.getValue();
+  }
+
   private _parentId$ = new BehaviorSubject<string>("");
   get parentId$(): string {
     return this._parentId$.getValue();
@@ -73,7 +79,7 @@ export class SynapseService {
   }
 
 
-  get urlParams(){
+  get urlParams() {
     return `?homeserver=${this.homeserver$}&roomId=${this.roomId$}&mediaGallery=${this.mediaGallery$}$fromStart=${this.fromStart$}`;
   }
 
@@ -105,10 +111,16 @@ export class SynapseService {
     );
   }
 
-  fetchTimeLine(filters = `{"types":["m.room.message"]}`) {
+  fetchTimeLine(typeFilter: string[] = ["m.room.message"], contains_url: null | boolean = null ) {
+    
     let from = (this.endToken$ ? `&from=${this.endToken$}` : '');
     let limit = 30;
-    return this.http.get<Timeline>(`https://${this.homeserver$}/_matrix/client/v3/rooms/${this.roomId$}/messages?access_token=${this.accessToken$}${this.getDirection()}${from}&filter=${filters}&limit=${limit}`);
+    let thisFilter = new Filter;
+    thisFilter.types = typeFilter;
+    if ( contains_url !== null ) thisFilter.contains_url = contains_url;
+    if (this.senderFilter$.length > 0) thisFilter.not_senders = this.senderFilter$;
+
+    return this.http.get<Timeline>(`https://${this.homeserver$}/_matrix/client/v3/rooms/${this.roomId$}/messages?access_token=${this.accessToken$}${this.getDirection()}${from}&filter=${thisFilter.print()}&limit=${limit}`);
   }
 
   firstTimelineSync() {
@@ -124,13 +136,11 @@ export class SynapseService {
   }
 
   fetchMedias(maxImages: number = 50) {
-    // let timeline: Message[] = [];
-    // this.setTimeline(timeline);
 
     this.initEndToken();
 
-    let filters = '{"types": ["m.room.message"], "contains_url": true }';
-    this.fetchTimeLine(filters).pipe(
+    let typesFilter = ["m.room.message"];
+    this.fetchTimeLine(typesFilter, true).pipe(
       tap((timeline) => {
         this.setTimeline(timeline.chunk),
           this.setEndToken(timeline.end)
@@ -142,9 +152,10 @@ export class SynapseService {
   }
 
   continueOnTimeline(type: 'image' | 'text', loop = 20): any { // the loop value is to avoid a loop of multiple calls
-    let filter = ( type === 'image' ? '{"types": ["m.room.message"], "contains_url": true }' : `{"types":["m.room.message"]}` )
+    let typesFilter = ["m.room.message"];
+    let contains_url = (type === 'image' ? true : null )
     loop--;
-    return this.fetchTimeLine(filter).pipe(
+    return this.fetchTimeLine(typesFilter, contains_url).pipe(
       tap((timeline) => { this.newTimeline = timeline.chunk, this.setEndToken(timeline.end) }),
       switchMap(timeline => iif(() => timeline.chunk.length === 0 && loop > 0, this.continueOnTimeline(type, loop), this.timeline$.pipe( // keep fetching if no result
         take(1),
@@ -200,6 +211,10 @@ export class SynapseService {
 
   public setRoomId(roomId: string) {
     this._roomId$.next(roomId);
+  }
+
+  public setSenderFilter(senderFilter: string[]) {
+    this._senderFilter$.next(senderFilter);
   }
 
   public setParentId(parentId: string) {

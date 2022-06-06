@@ -75,8 +75,9 @@ export class MatrixSpaceComponent implements OnInit {
         if (params['homeserver'] && params['roomId']) {
           this.synapse.setHomeserver(params['homeserver']);
           this.synapse.setRoomId(params['roomId']);
-          this.synapse.setMediaGallery(params['mediaGallery'] == "true");
-          this.synapse.setFromStart(params['fromStart'] == "true");
+          if (params['mediaGallery']) this.synapse.setMediaGallery(params['mediaGallery'] == "true");
+          if (params['fromStart']) this.synapse.setFromStart(params['fromStart'] == "true");
+          if (params['sendersFiltered']) this.synapse.setSenderFilter(params['sendersFiltered'].split(","));
           
         };
       }));
