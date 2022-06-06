@@ -7,8 +7,13 @@ export class Config {
     senderFilter: null | string[] = null;
     parentId!: string;
 
-    get isParentDisplayed(): boolean{ // return true if the root space is displayed
+    get isParentDisplayed(): boolean { // return true if the root space is displayed
         return this.roomId === this.parentId;
     }
+
+    get urlParams() {
+        return `?homeserver=${this.homeserver}&roomId=${this.roomId}&mediaGallery=${this.mediaGallery}&fromStart=${this.fromStart}`;
+    }
+
 
 }

@@ -22,7 +22,6 @@ export class MatrixNavComponent implements OnInit {
   }
 
   changeRoom(id: string) {
-    if (!this.synapse.parentId$) this.synapse.setParentId(this.synapse.roomId$);
     this.synapse.setRoomId(id);
     this.synapse.initiateRoom().subscribe();
   }

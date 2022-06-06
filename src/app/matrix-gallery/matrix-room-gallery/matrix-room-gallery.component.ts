@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
+import { Config } from 'src/app/shared/models/config.model';
 import { Message } from 'src/app/shared/models/message.model';
 import { SynapseService } from 'src/app/shared/services/synapse.service';
 
@@ -22,6 +23,16 @@ export class MatrixRoomGalleryComponent implements OnInit {
   constructor(private synapse: SynapseService) { }
 
   ngOnInit(): void {
+
+    if (this.homeserver && this.roomId) {
+      let config = new Config;
+      config.homeserver = this.homeserver;
+      config.roomId = this.roomId;
+      config.fromStart = this.fromStart;
+      config.mediaGallery = true;
+      this.synapse.setPageConfig(config);
+    }
+
     this.timeline$ = this.synapse.timeline$;
     this.synapse.fetchMedias();
   }

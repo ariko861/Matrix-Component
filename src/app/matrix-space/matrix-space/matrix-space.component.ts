@@ -31,10 +31,14 @@ export class MatrixSpaceComponent implements OnInit {
 
   ngOnInit(): void {
 
-    if (this.homeserver) this.synapse.setHomeserver(this.homeserver);
-    if (this.roomId) this.synapse.setRoomId(this.roomId);
-    if (this.fromStart) this.synapse.setFromStart(this.fromStart);
-    if (this.mediaGallery) this.synapse.setMediaGallery(this.mediaGallery);
+    if (this.homeserver && this.roomId) {
+      let config = new Config;
+      config.homeserver = this.homeserver;
+      config.roomId = this.roomId;
+      config.fromStart = this.fromStart;
+      config.mediaGallery = this.mediaGallery;
+      this.synapse.setPageConfig(config);
+    }
 
     this.timeline$ = this.synapse.timeline$;
 
@@ -55,19 +59,13 @@ export class MatrixSpaceComponent implements OnInit {
   }
 
   setRoomId(id: string) {
-    this.synapse.setParentId(this.synapse.roomId$);
     this.synapse.setRoomId(id);
     this.synapse.initiateRoom().subscribe();
   }
 
   getParent() {
-    this.synapse.setRoomId(this.synapse.parentId$);
+    this.synapse.setRoomId(this.synapse.pageConfig$.parentId);
     this.synapse.initiateRoom().subscribe();
-    this.synapse.setParentId("");
-  }
-
-  get hasParent(){
-    return this.synapse.parentId$;
   }
 
   getParams() {
@@ -92,11 +90,15 @@ export class MatrixSpaceComponent implements OnInit {
   }
 
   get isMediaGallery() {
-    return this.synapse.mediaGallery$;
+    return this.synapse.pageConfig$.mediaGallery;
   }
 
   get urlParams() {
-    return this.synapse.urlParams;
+    return this.synapse.pageConfig$.urlParams;
+  }
+
+  get parentIsNotDisplayed() {
+    return !this.synapse.pageConfig$.isParentDisplayed
   }
 
 }

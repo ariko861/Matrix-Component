@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { Config } from './shared/models/config.model';
 import { SynapseService } from './shared/services/synapse.service'; 
 
 @Component({
@@ -17,19 +18,23 @@ export class AppComponent implements OnInit {
 
 
   ngOnInit(): void {
-    if ( environment.homeserver ) this.synapse.setHomeserver(environment.homeserver);
-    if (environment.roomId ) this.synapse.setRoomId(environment.roomId);
+    if ( environment.homeserver && environment.roomId ) {
+      let config = new Config;
+      config.homeserver = environment.homeserver;
+      config.roomId = environment.roomId;
+      this.synapse.setPageConfig(config);
 
+    }
 
   }
 
   
   get isGallery(): boolean {
-    return this.synapse.mediaGallery$;
+    return this.synapse.pageConfig$.mediaGallery;
   }
 
   get isCarousel(): boolean {
-    return this.synapse.carousel$;
+    return this.synapse.pageConfig$.carousel;
   }
 
 }

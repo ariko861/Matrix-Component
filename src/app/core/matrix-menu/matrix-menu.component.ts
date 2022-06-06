@@ -1,9 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { tap } from 'rxjs';
+import { Router } from '@angular/router';
 import { SynapseService } from 'src/app/shared/services/synapse.service';
-import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-matrix-menu',
@@ -22,11 +20,11 @@ export class MatrixMenuComponent implements OnInit {
 
   ngOnInit(): void {
     this.configForm = this.formBuilder.group({
-      homeserver: [this.synapse.homeserver$, Validators.required],
-      roomId: [this.synapse.roomId$, Validators.required],
-      mediaGallery: [this.synapse.mediaGallery$],
-      carousel: [this.synapse.carousel$],
-      fromStart: [this.synapse.fromStart$]
+      homeserver: [this.synapse.pageConfig$.homeserver, Validators.required],
+      roomId: [this.synapse.pageConfig$.roomId, Validators.required],
+      mediaGallery: [this.synapse.pageConfig$.mediaGallery],
+      carousel: [this.synapse.pageConfig$.carousel],
+      fromStart: [this.synapse.pageConfig$.fromStart]
     });
 
   }
@@ -34,11 +32,11 @@ export class MatrixMenuComponent implements OnInit {
   expandMenu() {
     this.menuExpanded = true;
     this.configForm.setValue({
-      homeserver: this.synapse.homeserver$,
-      roomId: this.synapse.roomId$,
-      mediaGallery: this.synapse.mediaGallery$,
-      carousel: this.synapse.carousel$,
-      fromStart: this.synapse.fromStart$
+      homeserver: this.synapse.pageConfig$.homeserver,
+      roomId: this.synapse.pageConfig$.roomId,
+      mediaGallery: this.synapse.pageConfig$.mediaGallery,
+      carousel: this.synapse.pageConfig$.carousel,
+      fromStart: this.synapse.pageConfig$.fromStart
     })
   }
 
@@ -59,13 +57,7 @@ export class MatrixMenuComponent implements OnInit {
   }
 
   submitConfig() {
-    // this.synapse.setHomeserver(this.configForm.value.homeserver);
-    // this.synapse.setRoomId(this.configForm.value.roomId);
-    // this.synapse.setMediaGallery(this.configForm.value.mediaGallery);
-    // this.synapse.setCarousel(this.configForm.value.carousel);
-    // this.synapse.setFromStart(this.configForm.value.fromStart);
     this.closeMenu();
-    // this.synapse.initiateRoom().subscribe();
     this.navigateWithParams(
       this.configForm.value.homeserver, 
       this.configForm.value.roomId,

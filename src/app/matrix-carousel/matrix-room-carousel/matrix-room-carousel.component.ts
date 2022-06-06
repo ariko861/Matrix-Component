@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
+import { Config } from 'src/app/shared/models/config.model';
 import { Message } from 'src/app/shared/models/message.model';
 import { SynapseService } from 'src/app/shared/services/synapse.service';
 
@@ -22,9 +23,14 @@ export class MatrixRoomCarouselComponent implements OnInit {
 
   ngOnInit(): void {
 
-      if ( this.homeserver ) this.synapse.setHomeserver(this.homeserver);
-      if ( this.roomId ) this.synapse.setRoomId(this.roomId);
-      if ( this.fromStart ) this.synapse.setFromStart(this.fromStart);
+    if (this.homeserver && this.roomId) {
+      let config = new Config;
+      config.homeserver = this.homeserver;
+      config.roomId = this.roomId;
+      config.fromStart = this.fromStart;
+      config.carousel = true;
+      this.synapse.setPageConfig(config);
+    }
       
       this.synapse.fetchMedias(this.maxImages);
       this.carousel$ = this.synapse.timeline$;

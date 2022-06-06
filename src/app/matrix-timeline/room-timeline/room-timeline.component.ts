@@ -1,5 +1,6 @@
 import { Component, ElementRef, Input, OnInit } from '@angular/core';
 import { Observable, tap } from 'rxjs';
+import { Config } from 'src/app/shared/models/config.model';
 import { SynapseService } from 'src/app/shared/services/synapse.service';
 import { Message } from '../../shared/models/message.model';
 
@@ -24,9 +25,13 @@ export class RoomTimelineComponent implements OnInit {
   ngOnInit(): void {
     this.timeline$ = this.synapse.timeline$;
 
-    if (this.homeserver) this.synapse.setHomeserver(this.homeserver);
-    if (this.roomId) this.synapse.setRoomId(this.roomId);
-    if (this.fromStart) this.synapse.setFromStart(this.fromStart);
+    if (this.homeserver && this.roomId) {
+      let config = new Config;
+      config.homeserver = this.homeserver;
+      config.roomId = this.roomId;
+      config.fromStart = this.fromStart;
+      this.synapse.setPageConfig(config);
+    }
     this.synapse.firstTimelineSync();
 
     

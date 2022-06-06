@@ -44,55 +44,14 @@ export class SynapseService {
     return this._endToken$.getValue();
   }
 
-  private _homeserver$ = new BehaviorSubject<string>("");
-  get homeserver$(): string {
-    return this._homeserver$.getValue();
-  }
-
-  private _roomId$ = new BehaviorSubject<string>("");
-  get roomId$(): string {
-    return this._roomId$.getValue();
-  }
-
-  private _senderFilter$ = new BehaviorSubject<string[]>([]);
-  get senderFilter$(): string[] {
-    return this._senderFilter$.getValue();
-  }
-
-  private _parentId$ = new BehaviorSubject<string>("");
-  get parentId$(): string {
-    return this._parentId$.getValue();
-  }
-
-  private _mediaGallery$ = new BehaviorSubject<boolean>(false);
-  get mediaGallery$(): boolean {
-    return this._mediaGallery$.getValue();
-  }
-
-  private _carousel$ = new BehaviorSubject<boolean>(false);
-  get carousel$(): boolean {
-    return this._carousel$.getValue();
-  }
-
-  private _fromStart$ = new BehaviorSubject<boolean>(false);
-  get fromStart$(): boolean {
-    return this._fromStart$.getValue();
-  }
-
   private _pageConfig$ = new BehaviorSubject<Config>(new Config);
   get pageConfig$(): Config {
     return this._pageConfig$.getValue();
   }
 
 
-  get urlParams() {
-    return `?homeserver=${this.homeserver$}&roomId=${this.roomId$}&mediaGallery=${this.mediaGallery$}&fromStart=${this.fromStart$}`;
-  }
-
-
-
   getAccessTokenForGuest() {
-    return this.http.post<{ access_token: string }>(`https://${this.homeserver$}/_matrix/client/v3/register?kind=guest`, { initial_device_display_name: "matrix-component" }).pipe(
+    return this.http.post<{ access_token: string }>(`https://${this.pageConfig$.homeserver}/_matrix/client/v3/register?kind=guest`, { initial_device_display_name: "matrix-component" }).pipe(
       tap((response) => this.setAccessToken(response.access_token))
     );
   }
@@ -107,12 +66,12 @@ export class SynapseService {
   }
 
   initEndToken() {
-    if (this.fromStart$) this.setEndToken("t0-0")
+    if (this.pageConfig$.fromStart) this.setEndToken("t0-0")
     else this.setEndToken("");
   }
 
   getRoomHierarchy() {
-    return this.http.get<{ rooms: Room[] }>(`https://${this.homeserver$}/_matrix/client/v1/rooms/${this.roomId$}/hierarchy?access_token=${this.accessToken$}&suggested_only=true`).pipe(
+    return this.http.get<{ rooms: Room[] }>(`https://${this.pageConfig$.homeserver}/_matrix/client/v1/rooms/${this.pageConfig$.roomId}/hierarchy?access_token=${this.accessToken$}&suggested_only=true`).pipe(
       tap(response => this.setRooms(response.rooms))
     );
   }
@@ -124,9 +83,9 @@ export class SynapseService {
     let thisFilter = new Filter;
     thisFilter.types = typeFilter;
     if ( contains_url !== null ) thisFilter.contains_url = contains_url;
-    if (this.senderFilter$.length > 0) thisFilter.not_senders = this.senderFilter$;
+    if (this.pageConfig$.senderFilter && this.pageConfig$.senderFilter.length > 0) thisFilter.not_senders = this.pageConfig$.senderFilter;
 
-    return this.http.get<Timeline>(`https://${this.homeserver$}/_matrix/client/v3/rooms/${this.roomId$}/messages?access_token=${this.accessToken$}${this.getDirection()}${from}&filter=${thisFilter.print()}&limit=${limit}`);
+    return this.http.get<Timeline>(`https://${this.pageConfig$.homeserver}/_matrix/client/v3/rooms/${this.pageConfig$.roomId}/messages?access_token=${this.accessToken$}${this.getDirection()}${from}&filter=${thisFilter.print()}&limit=${limit}`);
   }
 
   firstTimelineSync() {
@@ -173,7 +132,7 @@ export class SynapseService {
   }
 
   getRoomState(filter: string = "") {
-    let roomStates = this.http.get<any[]>(`https://${this.homeserver$}/_matrix/client/v3/rooms/${this.roomId$}/state?access_token=${this.accessToken$}`);
+    let roomStates = this.http.get<any[]>(`https://${this.pageConfig$.homeserver}/_matrix/client/v3/rooms/${this.pageConfig$.roomId}/state?access_token=${this.accessToken$}`);
     if (!filter) return roomStates;
     else return roomStates.pipe(
       map(result => result.find(x => x.type === filter)),
@@ -184,7 +143,7 @@ export class SynapseService {
   getUrlFromMxc(url: string, thumbnail: 'thumbnail' | 'download') {
     let regex = url.match(/^mxc:\/\/([a-zA-Z0-9\.\-]+)\/([0-9a-zA-Z]+)$/i);
     let params = (thumbnail === 'thumbnail' ? '?width=640&height=500&method=scale' : "")
-    if (regex?.length) return `https://${this.homeserver$}/_matrix/media/v3/${thumbnail}/${regex[1]}/${regex[2]}${params}`
+    if (regex?.length) return `https://${this.pageConfig$.homeserver}/_matrix/media/v3/${thumbnail}/${regex[1]}/${regex[2]}${params}`
     else return "";
   }
 
@@ -195,7 +154,7 @@ export class SynapseService {
   }
 
   private getDirection() {
-    return this.fromStart$ ? `&dir=f` : `&dir=b`;
+    return this.pageConfig$.fromStart ? `&dir=f` : `&dir=b`;
   }
 
   private setTimeline(timeline: Message[]) {
@@ -210,38 +169,10 @@ export class SynapseService {
     this._endToken$.next(token);
   }
 
-  public setHomeserver(homeserver: string) {
-    this._homeserver$.next(homeserver);
-    this.setAccessToken('');
-  }
-
   public setRoomId(roomId: string) {
-    this._roomId$.next(roomId);
-  }
-
-  public setSenderFilter(senderFilter: string[]) {
-    this._senderFilter$.next(senderFilter);
-  }
-
-  public setParentId(parentId: string) {
-    this._parentId$.next(parentId);
-  }
-
-  public setMediaGallery(mediaGallery: boolean) {
-    this._mediaGallery$.next(mediaGallery);
-    let newConfig = this.pageConfig$;
-    newConfig.mediaGallery = mediaGallery;
-    this._pageConfig$.next(newConfig);
-    // if (mediaGallery === true) this.setCarousel(false);
-  }
-
-  public setCarousel(carousel: boolean) {
-    this._carousel$.next(carousel);
-    if (carousel === true) this.setMediaGallery(false);
-  }
-
-  public setFromStart(fromStart: boolean) {
-    this._fromStart$.next(fromStart);
+    let newPage = this.pageConfig$;
+    newPage.roomId = roomId;
+    this._pageConfig$.next(newPage);
   }
 
   public setPageConfig(config: Config) {
