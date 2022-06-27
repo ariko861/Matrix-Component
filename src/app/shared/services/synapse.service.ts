@@ -121,16 +121,15 @@ export class SynapseService {
 
   }
 
-  continueOnTimeline(type: 'image' | 'text', loop = 20): any { // the loop value is to avoid a loop of multiple calls
+  continueOnTimeline(type: 'image' | 'text'): any { // the loop value is to avoid a loop of multiple calls
     let typesFilter = ["m.room.message"];
     let contains_url = (type === 'image' ? true : null)
-    loop--;
     return this.fetchTimeLine(typesFilter, contains_url).pipe(
       tap((timeline) => { 
         this.newTimeline = timeline.chunk;
         if (timeline.end ) this.setEndToken(timeline.end) 
       }),
-      switchMap(timeline => iif(() => timeline.chunk.length === 0 && loop > 0, this.continueOnTimeline(type, loop), this.timeline$.pipe( // keep fetching if no result
+      switchMap(timeline => iif(() => timeline.chunk.length === 0 && timeline.end !== undefined, this.continueOnTimeline(type), this.timeline$.pipe( // keep fetching if no result
         take(1),
         tap((timeline) => timeline.push(...this.newTimeline)),
         tap((updatedTimeline) => this._timeline$.next(updatedTimeline))
