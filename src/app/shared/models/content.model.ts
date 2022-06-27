@@ -8,4 +8,8 @@ export class Content {
         size: number;
         w: number;
     }
+    'm.relates_to'!: {
+        rel_type: string;
+    }
+
 }
