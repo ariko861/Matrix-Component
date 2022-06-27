@@ -4,9 +4,9 @@
         *ngFor="let message of timeline$ | async; let last = last" appScrollTracker
         (timelineScrolled)="timelineScrolled()">
         <div class="tile-content">
+            <ng-container *ngIf="message.content">
             <div class="divider text-center"
                 [attr.data-content]="message.origin_server_ts | date: 'dd MMMM YYYY, HH:mm'"></div>
-            <ng-container *ngIf="message.content">
                 <div *ngIf="last" observeVisibility [debounceTime]="0" (visible)="timelineScrolled()"></div>
                 <!-- Display an image if message is image type -->
                 <ng-container *ngIf="message.content.msgtype === 'm.image'">
@@ -18,20 +18,27 @@
                 <ng-container *ngIf="message.content.msgtype === 'm.video'">
                         <video controls class="video-responsive video-in-timeline" src="{{ getUrlFromMxc(message.content.url, 'download') }}" ></video>
                 </ng-container>
+
+                <!-- Display an audio if message is audio type -->
+                <ng-container *ngIf="message.content.msgtype === 'm.audio'">
+                    <audio controls src="{{ getUrlFromMxc(message.content.url, 'download') }}" ></audio>
+            </ng-container>
+
+            
                 
                 <!-- Display the body if message is text type  -->
-                <ng-container *ngIf="message.content.msgtype === 'm.text'">
+                <ng-container *ngIf="message.content.msgtype === 'm.text' || message.content.msgtype === 'm.notice'">
                     <p [innerHTML]="message.content.body | markdown"></p>
                 </ng-container>
 
 
-            </ng-container>
-            <div class="tile-subtitle text-tiny">
-                <a class="label label-rounded text-left" href="https://matrix.to/#/{{message.sender}}">{{ message.sender
+                <div class="tile-subtitle text-tiny">
+                    <a class="label label-rounded text-left" href="https://matrix.to/#/{{message.sender}}">{{ message.sender
                     }}</a>
+                </div>
+                
+            </ng-container>
             </div>
-
-        </div>
 
     </div>
     <app-timeline-image [url]="fullImageUrl" [showModal]="showImageOnScreen" (destroyUrl)="hideModal()"></app-timeline-image>

@@ -76,16 +76,21 @@ export class SynapseService {
     );
   }
 
-  fetchTimeLine(typeFilter: string[] = ["m.room.message"], contains_url: null | boolean = null ) {
-    
+  fetchTimeLine(typeFilter: string[] = ["m.room.message"], contains_url: null | boolean = null) {
+
     let from = (this.endToken$ ? `&from=${this.endToken$}` : '');
     let limit = 30;
     let thisFilter = new Filter;
     thisFilter.types = typeFilter;
-    if ( contains_url !== null ) thisFilter.contains_url = contains_url;
+    if (contains_url !== null) thisFilter.contains_url = contains_url;
     if (this.pageConfig$.senderFilter && this.pageConfig$.senderFilter.length > 0) thisFilter.not_senders = this.pageConfig$.senderFilter;
 
-    return this.http.get<Timeline>(`https://${this.pageConfig$.homeserver}/_matrix/client/v3/rooms/${this.pageConfig$.roomId}/messages?access_token=${this.accessToken$}${this.getDirection()}${from}&filter=${thisFilter.print()}&limit=${limit}`);
+    return this.http.get<Timeline>(`https://${this.pageConfig$.homeserver}/_matrix/client/v3/rooms/${this.pageConfig$.roomId}/messages?access_token=${this.accessToken$}${this.getDirection()}${from}&filter=${thisFilter.print()}&limit=${limit}`).pipe(
+      // tap((timeline) => {
+      //   this._timeline$.next(timeline.chunk),
+      //     this.setEndToken(timeline.end)
+      // }),
+    );
   }
 
   firstTimelineSync() {
@@ -118,10 +123,13 @@ export class SynapseService {
 
   continueOnTimeline(type: 'image' | 'text', loop = 20): any { // the loop value is to avoid a loop of multiple calls
     let typesFilter = ["m.room.message"];
-    let contains_url = (type === 'image' ? true : null )
+    let contains_url = (type === 'image' ? true : null)
     loop--;
     return this.fetchTimeLine(typesFilter, contains_url).pipe(
-      tap((timeline) => { this.newTimeline = timeline.chunk, this.setEndToken(timeline.end) }),
+      tap((timeline) => { 
+        this.newTimeline = timeline.chunk;
+        if (timeline.end ) this.setEndToken(timeline.end) 
+      }),
       switchMap(timeline => iif(() => timeline.chunk.length === 0 && loop > 0, this.continueOnTimeline(type, loop), this.timeline$.pipe( // keep fetching if no result
         take(1),
         tap((timeline) => timeline.push(...this.newTimeline)),
