@@ -86,7 +86,8 @@ export class SynapseService {
     if (this.pageConfig$.senderFilter && this.pageConfig$.senderFilter.length > 0) thisFilter.not_senders = this.pageConfig$.senderFilter;
 
     return this.http.get<Timeline>(`https://${this.pageConfig$.homeserver}/_matrix/client/v3/rooms/${this.pageConfig$.roomId}/messages?access_token=${this.accessToken$}${this.getDirection()}${from}&filter=${thisFilter.print()}&limit=${limit}`).pipe(
-      // tap((timeline) => {
+      // map( timeline => )  
+    // tap((timeline) => {
       //   this._timeline$.next(timeline.chunk),
       //     this.setEndToken(timeline.end)
       // }),
@@ -98,7 +99,7 @@ export class SynapseService {
     this.initEndToken(); // reinitialize end Token
     this.fetchTimeLine().pipe(
       tap((timeline) => {
-        this._timeline$.next(timeline.chunk),
+        this.setTimeline(timeline.chunk),
           this.setEndToken(timeline.end)
       }),
       switchMap(timeline => iif(() => timeline.chunk.length === 0, this.continueOnTimeline('text'), EMPTY))

@@ -10,6 +10,7 @@ export class Content {
     }
     'm.relates_to'!: {
         rel_type: string;
+        event_id: string;
     }
 
 }
