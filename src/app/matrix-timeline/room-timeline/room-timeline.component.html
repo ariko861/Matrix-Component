@@ -37,10 +37,10 @@
                         }}</a>
                 </div>
 
-                <div class="tile-action right">
+                <div class="tile-action">
                     <ng-container
                         *ngIf="message.unsigned['m.relations'] && message.unsigned['m.relations']['m.thread'] !== undefined">
-                        <button class="btn">
+                        <button class="btn btn-sm margin-top">
                             {{message.unsigned['m.relations']['m.thread']?.count}}
                             <i class="icon icon-message"></i> : 
                             {{ message.unsigned['m.relations']['m.thread']?.latest_event?.content?.body }}
