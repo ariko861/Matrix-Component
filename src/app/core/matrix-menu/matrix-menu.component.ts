@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { debounceTime } from 'rxjs';
 import { SynapseService } from 'src/app/shared/services/synapse.service';
 
 @Component({
@@ -22,11 +23,38 @@ export class MatrixMenuComponent implements OnInit {
     this.configForm = this.formBuilder.group({
       homeserver: [this.synapse.pageConfig$.homeserver, Validators.required],
       roomId: [this.synapse.pageConfig$.roomId, Validators.required],
+      roomAlias: [''],
       mediaGallery: [this.synapse.pageConfig$.mediaGallery],
       carousel: [this.synapse.pageConfig$.carousel],
       fromStart: [this.synapse.pageConfig$.fromStart]
     });
 
+    this.onChanges();
+  }
+
+  onChanges() {
+    this.configForm.get('roomAlias')?.valueChanges.pipe(debounceTime(1000)).subscribe(alias => {
+      var pattern = new RegExp(`#[^:]*:.+`);
+      if (pattern.test(alias)) {
+        this.synapse.getRoomIdFromAlias(alias).subscribe(
+          (response) => {
+            if (response["room_id"]) {
+              this.configForm.patchValue({
+                roomId: response.room_id
+              })
+            }
+          }, (error) => {
+            console.log(error)
+            if (error.error["errcode"] && error.error["errcode"] === 'M_NOT_FOUND') {
+              this.configForm.controls['roomAlias'].setErrors({ err: error.error["error"] });
+              console.log(this.configForm.controls['roomAlias'])
+            } else {
+              console.error("This alias doesn't exists")
+            }
+          }
+        )
+      }
+    })
   }
 
   expandMenu() {
@@ -34,6 +62,7 @@ export class MatrixMenuComponent implements OnInit {
     this.configForm.setValue({
       homeserver: this.synapse.pageConfig$.homeserver,
       roomId: this.synapse.pageConfig$.roomId,
+      roomAlias: '',
       mediaGallery: this.synapse.pageConfig$.mediaGallery,
       carousel: this.synapse.pageConfig$.carousel,
       fromStart: this.synapse.pageConfig$.fromStart
@@ -45,13 +74,13 @@ export class MatrixMenuComponent implements OnInit {
   }
 
   checkCarousel(e: any) {
-    if (e.target.checked){
+    if (e.target.checked) {
       this.configForm.patchValue({ mediaGallery: false })
     }
   }
 
   checkGallery(e: any) {
-    if (e.target.checked){
+    if (e.target.checked) {
       this.configForm.patchValue({ carousel: false })
     }
   }
@@ -59,18 +88,18 @@ export class MatrixMenuComponent implements OnInit {
   submitConfig() {
     this.closeMenu();
     this.navigateWithParams(
-      this.configForm.value.homeserver, 
+      this.configForm.value.homeserver,
       this.configForm.value.roomId,
       this.configForm.value.mediaGallery,
       this.configForm.value.fromStart
-      )
+    )
   }
 
-  navigateWithParams(homeserver: string, roomId: string, mediaGallery: boolean, fromStart: boolean ) {
+  navigateWithParams(homeserver: string, roomId: string, mediaGallery: boolean, fromStart: boolean) {
     this.route.navigate(
       [""],
-      { queryParams: {homeserver: homeserver, roomId: roomId, mediaGallery: mediaGallery, fromStart: fromStart} }
-      )
+      { queryParams: { homeserver: homeserver, roomId: roomId, mediaGallery: mediaGallery, fromStart: fromStart } }
+    )
   }
 
 }

@@ -3,12 +3,14 @@ import { CommonModule } from '@angular/common';
 import { RoomTimelineComponent } from './room-timeline/room-timeline.component';
 import { SharedModule } from '../shared/shared.module';
 import { createCustomElement } from '@angular/elements';
+import { TimelineEventComponent } from './timeline-event/timeline-event.component';
 
 
 
 @NgModule({
   declarations: [
     RoomTimelineComponent,
+    TimelineEventComponent,
   ],
   imports: [
     CommonModule,

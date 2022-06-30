@@ -1,0 +1,50 @@
+<div class="tile-content">
+    <ng-container *ngIf="message.content && !message.content['m.relates_to']?.rel_type">
+        <div class="divider text-center"
+            [attr.data-content]="message.origin_server_ts | date: 'dd MMMM YYYY, HH:mm'"></div>
+        
+        <!-- Display an image if message is image type -->
+        <ng-container *ngIf="message.content.msgtype === 'm.image'">
+            <a class="c-hand" (click)="imageClick(message)">
+                <img class="img-responsive" src="{{ getUrlFromMxc(message.content.url, 'thumbnail') }}" />
+            </a>
+        </ng-container>
+        <!-- Display a video if message is video type --> 
+        <ng-container *ngIf="message.content.msgtype === 'm.video'">
+            <video controls class="video-responsive video-in-timeline"
+                src="{{ getUrlFromMxc(message.content.url, 'download') }}"></video>
+        </ng-container>
+
+        <!-- Display an audio if message is audio type -->
+        <ng-container *ngIf="message.content.msgtype === 'm.audio'">
+            <audio controls src="{{ getUrlFromMxc(message.content.url, 'download') }}"></audio>
+        </ng-container>
+
+
+
+        <!-- Display the body if message is text type  -->
+        <ng-container *ngIf="message.content.msgtype === 'm.text' || message.content.msgtype === 'm.notice'">
+            <p [innerHTML]="message.content.body | markdown"></p>
+        </ng-container>
+
+
+        <div class="tile-subtitle text-tiny">
+            <a class="label label-rounded text-left" href="https://matrix.to/#/{{message.sender}}">{{
+                message.sender
+                }}</a>
+        </div>
+
+        <div class="tile-action">
+            <ng-container
+                *ngIf="message.unsigned['m.relations'] && message.unsigned['m.relations']['m.thread'] !== undefined">
+                <button class="btn btn-sm margin-top">
+                    {{message.unsigned['m.relations']['m.thread']?.count}}
+                    <i class="icon icon-message"></i> : 
+                    {{ message.unsigned['m.relations']['m.thread']?.latest_event?.content?.body }}
+                </button>
+            </ng-container>
+        </div>
+
+
+    </ng-container>
+</div>

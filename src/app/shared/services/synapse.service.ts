@@ -161,6 +161,10 @@ export class SynapseService {
     else return { name: "", url: "", topic: "" } //define an empty object to fill with blank
   }
 
+  getRoomIdFromAlias(alias: string) {
+    return this.http.get<any>(`https://${this.pageConfig$.homeserver}/_matrix/client/v3/directory/room/${encodeURIComponent(alias)}`);
+  }
+  
   private getDirection() {
     return this.pageConfig$.fromStart ? `&dir=f` : `&dir=b`;
   }

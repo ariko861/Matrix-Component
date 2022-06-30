@@ -18,6 +18,12 @@
         </div>
 
         <div class="form-group">
+            <label class="form-label">Or Room Alias</label>
+            <input class="form-input" type="text" formControlName="roomAlias">
+            <app-print-error [control]="configForm.controls['roomAlias']"></app-print-error>
+        </div>
+
+        <div class="form-group">
             <label class="form-label">Display Photo Gallery</label>
             <input type="checkbox" formControlName="mediaGallery" (change)="checkGallery($event)">
         </div>

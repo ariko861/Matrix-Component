@@ -4,6 +4,7 @@ import { TimelineImageComponent } from './components/timeline-image/timeline-ima
 import { MarkdownPipe } from './pipes/markdown.pipe';
 import { ObserveVisibilityDirective } from './directives/observe-visibility.directive';
 import { RoomSummaryComponent } from './components/room-summary/room-summary.component';
+import { PrintErrorComponent } from './components/print-error/print-error.component';
 
 
 
@@ -12,7 +13,8 @@ import { RoomSummaryComponent } from './components/room-summary/room-summary.com
     TimelineImageComponent,
     MarkdownPipe,
     ObserveVisibilityDirective,
-    RoomSummaryComponent
+    RoomSummaryComponent,
+    PrintErrorComponent
   ],
   imports: [
     CommonModule,
@@ -21,7 +23,8 @@ import { RoomSummaryComponent } from './components/room-summary/room-summary.com
     TimelineImageComponent,
     ObserveVisibilityDirective,
     MarkdownPipe,
-    RoomSummaryComponent
+    RoomSummaryComponent,
+    PrintErrorComponent
   ]
 })
 export class SharedModule { }

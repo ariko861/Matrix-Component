@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatrixMenuComponent } from './matrix-menu/matrix-menu.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatrixNavComponent } from './matrix-nav/matrix-nav.component';
+import { SharedModule } from '../shared/shared.module';
 
 
 
@@ -13,7 +14,8 @@ import { MatrixNavComponent } from './matrix-nav/matrix-nav.component';
   ],
   imports: [
     CommonModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    SharedModule
   ],
   exports: [
     MatrixMenuComponent,
