@@ -16,7 +16,6 @@ export class PrintErrorComponent implements OnInit {
   errorMessage!: string;
 
   ngOnInit(): void {
-    console.log(this.control)
   }
 
 }

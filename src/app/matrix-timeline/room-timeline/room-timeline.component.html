@@ -2,9 +2,18 @@
     <div class="matrix-message" class="tile" *ngFor="let message of timeline$ | async; let last = last" appScrollTracker
         (timelineScrolled)="timelineScrolled()">
 
-        <app-timeline-event [message]="message" (clickOnImage)="imageClick($event)"></app-timeline-event>
-        <div *ngIf="last" observeVisibility [debounceTime]="500" (visible)="timelineScrolled()">
-        </div>
+        <ng-container *ngIf="message.content && !message.content['m.relates_to']?.rel_type">
+            
+            <app-timeline-event class="full-width" [message]="message" (clickOnImage)="imageClick($event)"></app-timeline-event>
+            
+            <div *ngIf="last" observeVisibility [debounceTime]="500" (visible)="timelineScrolled()">
+            </div>
+
+            <!-- <div class="tile-action">
+                 
+            </div> -->
+
+        </ng-container>
 
     </div>
     <app-timeline-image [url]="fullImageUrl" [showModal]="showImageOnScreen" (destroyUrl)="hideModal()">

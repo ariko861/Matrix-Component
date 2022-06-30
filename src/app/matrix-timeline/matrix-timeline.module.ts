@@ -4,6 +4,7 @@ import { RoomTimelineComponent } from './room-timeline/room-timeline.component';
 import { SharedModule } from '../shared/shared.module';
 import { createCustomElement } from '@angular/elements';
 import { TimelineEventComponent } from './timeline-event/timeline-event.component';
+import { ThreadComponent } from './thread/thread.component';
 
 
 
@@ -11,6 +12,7 @@ import { TimelineEventComponent } from './timeline-event/timeline-event.componen
   declarations: [
     RoomTimelineComponent,
     TimelineEventComponent,
+    ThreadComponent,
   ],
   imports: [
     CommonModule,

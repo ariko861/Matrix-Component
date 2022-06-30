@@ -17,6 +17,8 @@ export class TimelineEventComponent implements OnInit {
   @Output()
   clickOnImage = new EventEmitter();
 
+  showThreads: boolean = false;
+
   ngOnInit(): void {
   }
 
@@ -27,6 +29,9 @@ export class TimelineEventComponent implements OnInit {
   imageClick(message: Message){
     this.clickOnImage.emit(message);
 
+  }
+  clickOnThread(): void{
+    this.showThreads = !this.showThreads;
   }
 
 }

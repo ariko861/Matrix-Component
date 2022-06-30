@@ -37,19 +37,20 @@ export class MatrixMenuComponent implements OnInit {
       var pattern = new RegExp(`#[^:]*:.+`);
       if (pattern.test(alias)) {
         this.synapse.getRoomIdFromAlias(alias).subscribe(
-          (response) => {
-            if (response["room_id"]) {
-              this.configForm.patchValue({
-                roomId: response.room_id
-              })
-            }
-          }, (error) => {
-            console.log(error)
-            if (error.error["errcode"] && error.error["errcode"] === 'M_NOT_FOUND') {
-              this.configForm.controls['roomAlias'].setErrors({ err: error.error["error"] });
-              console.log(this.configForm.controls['roomAlias'])
-            } else {
-              console.error("This alias doesn't exists")
+          {
+            next: (response) => {
+              if (response["room_id"]) {
+                this.configForm.patchValue({
+                  roomId: response.room_id
+                })
+              }
+            },
+            error: (error) => {
+              if (error.error["errcode"] && error.error["errcode"] === 'M_NOT_FOUND') {
+                this.configForm.controls['roomAlias'].setErrors({ err: error.error["error"] });
+              } else {
+                console.error("This alias doesn't exists")
+              }
             }
           }
         )

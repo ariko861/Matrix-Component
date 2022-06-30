@@ -42,8 +42,6 @@ export class RoomTimelineComponent implements OnInit {
 
   timelineScrolled() {
     this.synapse.continueOnTimeline('text').subscribe();
-    console.log(this.timeline$)
-
   }
 
   imageClick(message: Message){

@@ -148,6 +148,10 @@ export class SynapseService {
     )
   }
 
+  getThreadsOfEvent(message: Message) {
+    return this.http.get<Timeline>(`https://${this.pageConfig$.homeserver}/_matrix/client/v1/rooms/${this.pageConfig$.roomId}/relations/${encodeURIComponent(message.event_id)}/m.thread?access_token=${this.accessToken$}`)
+  }
+
   getUrlFromMxc(url: string, thumbnail: 'thumbnail' | 'download') {
     let regex = url.match(/^mxc:\/\/([a-zA-Z0-9\.\-]+)\/([0-9a-zA-Z]+)$/i);
     let params = (thumbnail === 'thumbnail' ? '?width=640&height=500&method=scale' : "")
