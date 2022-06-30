@@ -38,9 +38,7 @@ export class RoomTimelineComponent implements OnInit {
 
   }
 
-  getUrlFromMxc(url: string, thumbnail: 'thumbnail' | 'download') {
-    return this.synapse.getUrlFromMxc(url, thumbnail);
-  }
+  
 
   timelineScrolled() {
     this.synapse.continueOnTimeline('text').subscribe();
