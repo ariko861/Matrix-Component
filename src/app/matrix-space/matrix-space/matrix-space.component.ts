@@ -6,6 +6,7 @@ import { Config } from 'src/app/shared/models/config.model';
 import { Message } from 'src/app/shared/models/message.model';
 import { Room } from 'src/app/shared/models/room.model';
 import { SynapseService } from 'src/app/shared/services/synapse.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-matrix-space',
@@ -19,6 +20,7 @@ export class MatrixSpaceComponent implements OnInit {
   timeline$!: Observable<Message[]>;
   fullImageUrl!: string;
   favicon: HTMLLinkElement | null = document.querySelector('#appIcon');
+  roomMatrixLink: string = "";
 
   rooms$!: Observable<Room[]>;
 
@@ -39,6 +41,8 @@ export class MatrixSpaceComponent implements OnInit {
       config.mediaGallery = this.mediaGallery;
       this.synapse.setPageConfig(config);
     }
+
+    if ( environment.linkToMatrixRoom ) this.roomMatrixLink = `https://matrix.to/#/`;
 
     this.timeline$ = this.synapse.timeline$;
 

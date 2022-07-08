@@ -10,8 +10,10 @@
             </figure>
         </div>
         <div class="tile-content">
-            <h3 class="tile-title">{{ room.name }}</h3>
-            <h6 class="tile-subtitle" [innerHTML]=""></h6>
+            <h3 class="tile-title">{{ room.name }}
+                <a *ngIf="roomMatrixLink" class="text-supertiny" [href]="roomMatrixLink + room.room_id" target="_blank" title="Ouvrir avec une application Matrix ( Element, FluffyChat, Thunderbird, etc... )">[ Rejoindre sur Matrix ]</a>
+            </h3>
+            <h6 class="tile-subtitle">{{ room.topic }}</h6>
             <p class="text-tiny"><a href="/{{urlParams}}">Direct Link</a></p>
         </div>
     </div>
