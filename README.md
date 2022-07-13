@@ -1,27 +1,28 @@
 # MatrixComponent
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.3.6.
+Une application construite avec Angular pour utiliser le contenu d'un salon Matrix sur un site web.
+Peut-être utilisé pour :
+- afficher une galerie d'images sur un site web à partir des photos d'un groupe.
+- créer une sorte de micro-blog ou on peut facilement choisir les personnes autorisées à publier.
+- créer un journal de voyage.
+- gérer le contenu de son site web à partir d'une application Matrix ( Element, FluffyChat, Nheko, Cinny, Thunderbird... ) voire même à partir de WhatsApp, Telegram, Signal, en utilisant les [passerelles Matrix](https://matrix.org/bridges/)
+
+Un exemple est hebergé sur [m.alternumerica.org](https://m.alternumerica.org)
+
+## Pour obtenir un lien vers un salon
+
+Créez un salon, ou utilisez un salon existant.
+- dans les paramètres, la visibilité de l'**historique** doit être réglée à **N'importe qui**
+- Si il s'agit d'un espace, les salons affichées doivent faire partie des **salons recommandés** de l'espace.
+- Ouvrez l'application.
+- Insérez le nom du serveur ( doit accepter les utilisateurs invités ), ainsi que l'ID du salon.
+- Après avoir enregistrer les modifications, vous pourrez utiliser le lien modifié sur le navigateur.
 
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
 ## Build
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
